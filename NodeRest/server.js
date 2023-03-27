@@ -1,10 +1,16 @@
 const express = require("express");
 const dotenv = require("dotenv");
 dotenv.config({ path: ".env-local" });
-const PORT = process.env.PORT || "3000";
+const cors = require("cors");
+
+const PORT = process.env.PORT || "3001";
 
 const app = express();
-
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+  })
+);
 // middleware
 
 app.use(express.json());
@@ -19,6 +25,8 @@ const addRouter = require("./routes/addEmotion");
 app.use("/add", addRouter);
 const getRouter = require("./routes/getEmotions");
 app.use("/get", getRouter);
+const getAllRouter = require("./routes/getAllEmotions");
+app.use("/getall", getAllRouter);
 // start listening
 
 app.listen(PORT, () => {
