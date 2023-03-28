@@ -54,5 +54,5 @@ module.exports = router;
 
 
 // frontend yhdistettyy apiin, tiedon lisäys ja haku onnistuu
-// tänään teen ci tehtävää ja mietin lediseinän kuvan luontia
+// tänään teen ci tehtävää ja mietin lediseinän kuvan luontia autan saamaan lokaali b'kin muiden koneille
 
