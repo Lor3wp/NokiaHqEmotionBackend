@@ -51,3 +51,8 @@ router.get("/getallstats", async function (req, res) {
 });
 
 module.exports = router;
+
+
+// frontend yhdistettyy apiin, tiedon lisäys ja haku onnistuu
+// tänään teen ci tehtävää ja mietin lediseinän kuvan luontia
+
