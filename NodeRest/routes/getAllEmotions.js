@@ -2,7 +2,7 @@ const express = require("express");
 const pool = require("../helpers/database");
 const router = express.Router();
 
-router.get("/getallstats", async function (req, res) {
+router.get("/getallemotions", async function (req, res) {
   try {
     const sqlQuery = "select count(*) as count from emotions";
     const rows = await pool.query(sqlQuery);

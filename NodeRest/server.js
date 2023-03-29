@@ -27,6 +27,8 @@ const getRouter = require("./routes/getEmotions");
 app.use("/get", getRouter);
 const getAllRouter = require("./routes/getAllEmotions");
 app.use("/getall", getAllRouter);
+const getAllStatsRouter = require("./routes/getAllStats");
+app.use("/getstats", getAllStatsRouter);
 // start listening
 
 app.listen(PORT, () => {
