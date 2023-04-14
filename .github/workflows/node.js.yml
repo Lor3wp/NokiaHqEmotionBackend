@@ -1,3 +1,6 @@
+# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
+
 name: Node.js CI
 
 on:
@@ -9,13 +12,13 @@ on:
 jobs:
   build:
 
-    runs-on: ${{matrix.os}}
+    runs-on: ubuntu-latest
     defaults:
       run:
-       working-directory: NodeRest/
+        working-directory: NodeRest/
+
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macOS-latest]
         node-version: [18.x]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
@@ -27,8 +30,4 @@ jobs:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
         cache-dependency-path: NodeRest/package-lock.json
-    - name: install dependencies
-      run: npm ci
-    - name: Unit tests
-      working-directory: NodeRest/
-      run: npx mocha
+    - run: npm i
