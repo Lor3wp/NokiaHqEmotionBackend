@@ -6,7 +6,7 @@ const router = express.Router();
 router.get("/getday/:year/:month/:day", async function (req, res) {
     try {
         console.log(req.params.year, req.params.month, req.params.day)
-        const sqlQuery = "SELECT DATE(created_at) AS created_at_hour,\n" +
+        const sqlQuery = "SELECT HOUR(created_at) AS created_at,\n" +
             "emotion_id,\n" +
             "sub_emotion_id,\n" +
             "COUNT(*)\n" +
@@ -15,8 +15,15 @@ router.get("/getday/:year/:month/:day", async function (req, res) {
             "GROUP BY HOUR(created_at), emotion_id, sub_emotion_id;";
         const rows = await pool.query(sqlQuery, [req.params.year.toString(), req.params.month.toString(), req.params.day.toString()]);
         console.log(rows)
-        res.status(200).json(rows);
-        return rows
+        const serializedRows = rows.map((row) => {
+            return {
+                create_at: row.create_at.toString(),
+                emotion_id: row.emotion_id.toString(),
+                sub_emotion_id: row.sub_emotion_id.toString(),
+                count: row.count.toString(),
+            };
+        });
+        res.status(200).json(serializedRows);
     } catch (error) {
         res.status(400).send(error.message);
     }
@@ -26,7 +33,7 @@ router.get("/getweek/:startdate/:enddate", async function (req, res) {
     try {
         console.log(req.params.startdate, req.params.enddate)
 
-        const sqlQuery = "SELECT DAY(created_at) AS created_at_day,\n" +
+        const sqlQuery = "SELECT DAY(created_at) AS created_at,\n" +
             "emotion_id,\n" +
             "sub_emotion_id,\n" +
             "COUNT(*)\n" +
@@ -45,7 +52,7 @@ router.get("/getmonth/:year/:month", async function (req, res) {
     try {
         console.log(req.params.month)
 
-        const sqlQuery = "SELECT DAY(created_at) AS created_at_day,\n" +
+        const sqlQuery = "SELECT DAY(created_at) AS created_at,\n" +
             "emotion_id,\n" +
             "sub_emotion_id,\n" +
             "COUNT(*)\n" +
@@ -65,7 +72,7 @@ router.get("/getyear/:year", async function (req, res) {
     try {
         console.log(req.params.year)
 
-        const sqlQuery = "SELECT MONTH(created_at) AS created_at_month,\n" +
+        const sqlQuery = "SELECT MONTH(created_at) AS created_at,\n" +
             "emotion_id,\n" +
             "sub_emotion_id,\n" +
             "COUNT(*)\n" +
