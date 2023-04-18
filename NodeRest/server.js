@@ -18,9 +18,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 // routes
-app.get("/", (req, res) => {
-  res.status(200).json({ name: "pavel", doing: "coding" });
-});
+// app.get("/", (req, res) => {
+//   res.status(200).json({ name: "pavel", doing: "coding" });
+// });
 
 const addRouter = require("./routes/addEmotion");
 app.use("/add", addRouter);
@@ -30,6 +30,8 @@ const getAllRouter = require("./routes/getAllEmotions");
 app.use("/getall", getAllRouter);
 const getAllStatsRouter = require("./routes/getAllStats");
 app.use("/getstats", getAllStatsRouter);
+const emotionsRouter = require("./routes/emotionsRoute");
+app.use("/emotions", emotionsRouter);
 // start listening
 
 app.listen(PORT, () => {
