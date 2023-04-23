@@ -24,12 +24,6 @@ app.use(express.urlencoded({ extended: false }));
 
 const addRouter = require("./routes/addEmotion");
 app.use("/add", addRouter);
-const getRouter = require("./routes/getEmotions");
-app.use("/get", getRouter);
-const getAllRouter = require("./routes/getAllEmotions");
-app.use("/getall", getAllRouter);
-const getAllStatsRouter = require("./routes/getAllStats");
-app.use("/getstats", getAllStatsRouter);
 const emotionsRouter = require("./routes/emotionsRoute");
 app.use("/emotions", emotionsRouter);
 // start listening
