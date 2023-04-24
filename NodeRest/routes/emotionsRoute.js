@@ -99,7 +99,7 @@ router.get("/getyear/:year", async function (req, res) {
             "sub_emotion_id,\n" +
             "COUNT(*) AS count\n" +
             "FROM emotions\n" +
-            "WHERE YEAR(created_at) = 2022\n" +
+            "WHERE YEAR(created_at) = ?\n" +
             "GROUP BY MONTH(created_at), emotion_id, sub_emotion_id;";
         const rows = await pool.query(sqlQuery, [req.params.year]);
         console.log(rows)
@@ -109,7 +109,6 @@ router.get("/getyear/:year", async function (req, res) {
                 emotion_id: row.emotion_id.toString(),
                 sub_emotion_id: row.sub_emotion_id.toString(),
                 count: row.count.toString(),
-                full_date: row.full_date.toString(),
             };
         });
         res.status(200).json(serializedRows);
@@ -137,7 +136,6 @@ router.get("/getyears/:startyear/:endyear", async function (req, res) {
                 emotion_id: row.emotion_id.toString(),
                 sub_emotion_id: row.sub_emotion_id.toString(),
                 count: row.count.toString(),
-                full_date: row.full_date.toString(),
             };
         });
         res.status(200).json(serializedRows);
@@ -235,7 +233,7 @@ router.get("/getyear/primary/:year", async function (req, res) {
             "emotion_id,\n" +
             "COUNT(*) AS count\n" +
             "FROM emotions\n" +
-            "WHERE YEAR(created_at) = 2022\n" +
+            "WHERE YEAR(created_at) = ?\n" +
             "GROUP BY MONTH(created_at), emotion_id;";
         const rows = await pool.query(sqlQuery, [req.params.year]);
         console.log(rows)
