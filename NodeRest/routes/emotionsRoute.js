@@ -244,7 +244,6 @@ router.get("/getyear/primary/:year", async function (req, res) {
                 created_at: row.created_at.toString(),
                 emotion_id: row.emotion_id.toString(),
                 count: row.count.toString(),
-                full_date: row.full_date.toString(),
             };
         });
         res.status(200).json(serializedRows);
@@ -270,7 +269,6 @@ router.get("/getyears/primary/:startyear/:endyear", async function (req, res) {
                 created_at: row.created_at.toString(),
                 emotion_id: row.emotion_id.toString(),
                 count: row.count.toString(),
-                full_date: row.full_date.toString(),
             };
         });
         res.status(200).json(serializedRows);
