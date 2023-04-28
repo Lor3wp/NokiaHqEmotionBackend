@@ -35,97 +35,6 @@ router.get("/getday/:year/:month/:day", async function (req, res) {
     }
 });
 
-
-router.get("/getyear/:year", async function (req, res) {
-    try {
-        console.log(req.params.year)
-
-        const sqlQuery = "SELECT strftime('%M', created_at) AS created_at,\n" +
-            "emotion_id,\n" +
-            "sub_emotion_id,\n" +
-            "COUNT(*) AS count\n" +
-            "FROM emotions\n" +
-            "WHERE strftime('%Y', created_at) = ?\n" +
-            "GROUP BY strftime('%M', created_at), emotion_id, sub_emotion_id;";
-        const rows = await db.all(sqlQuery, [req.params.year]);
-        console.log(rows)
-        const serializedRows = rows.map((row) => {
-            return {
-                created_at: row.created_at.toString(),
-                emotion_id: row.emotion_id.toString(),
-                sub_emotion_id: row.sub_emotion_id.toString(),
-                count: row.count.toString(),
-            };
-        });
-        res.status(200).json(serializedRows);
-    } catch (error) {
-        res.status(400).send(error.message);
-    }
-});
-
-
-// router.get("/getmonth/:year/:month", function (req, res) {
-//     try {
-//         console.log(req.params.month)
-
-
-//         const month = req.params.month;
-//         const year = req.params.year;
-//         const sql = `SELECT strftime('%d', created_at) AS created_at,
-//                      emotion_id,
-//                      sub_emotion_id,
-//                      COUNT(*) AS count,
-//                      strftime('%Y-%m-%d', created_at) AS full_date
-//                      FROM emotions
-//                      WHERE strftime('%Y', created_at) = ?
-//                      AND strftime('%m', created_at) = ?
-//                      GROUP BY strftime('%d', created_at), emotion_id, sub_emotion_id`;
-//         const params = [year, month];
-        
-//         const rows = db.all(sql, params, (err, rows) => {
-//           if (err) {
-//             console.error(err.message);
-//             res.status(500).send('Server error');
-//           } else {
-//             res.status(200).json(rows);
-//           }
-//         });
-//         // const sqlQuery = "SELECT strftime('%d', created_at) AS created_at,\n" +
-//         //     "emotion_id,\n" +
-//         //     "sub_emotion_id,\n" +
-//         //     "COUNT(*) AS count,\n" +
-//         //     "strftime('%Y-%m-%d', created_at) AS full_date\n" +
-//         //     "FROM emotions\n" +
-//         //     "WHERE strftime('%Y', created_at) = ?\n" +
-//         //     "AND strftime('%m', created_at) = ?\n" +
-//         //     "GROUP BY strftime('%d', created_at), emotion_id, sub_emotion_id;";
-//         // const rows = db.all(sqlQuery, [req.params.year, req.params.month], (err, rows) => {
-//         //         if (err) {
-//         //           console.error(err);
-//         //           res.sendStatus(500);
-//         //         } else {
-//         //           res.json(rows);
-//         //         }
-//         //       });
-//         const serializedRows = JSON.stringify(rows);
-//         console.log(`serialisoidut rivit ${serializedRows}`)
-//         // const rows = await db.all(sqlQuery, [req.params.year, req.params.month]);
-//         console.log(`rows here ${rows}`)
-//         // const serializedRows = rows.map((row) => {
-//         //     return {
-//         //         created_at: row.created_at.toString(),
-//         //         emotion_id: row.emotion_id.toString(),
-//         //         sub_emotion_id: row.sub_emotion_id.toString(),
-//         //         count: row.count.toString(),
-//         //         full_date: row.full_date.toString(),
-//         //     };
-//         // });
-//     } catch (error) {
-//         res.status(400).send(error.message);
-//     }
-// });
-
-
 router.get("/getmonth/:year/:month", async function (req, res) {
     try {
       const month = req.params.month;
@@ -160,33 +69,33 @@ router.get("/getmonth/:year/:month", async function (req, res) {
 
 router.get("/getyear/:year", async function (req, res) {
     try {
-        console.log(req.params.year)
-        const param = req.params.year;
-        const sqlQuery = `SELECT strftime('%m', created_at) AS created_at,
-            emotion_id,
-            sub_emotion_id,
-            COUNT(*) AS count
-            FROM emotions
-            WHERE strftime('%Y', created_at) = ?
-            GROUP BY strftime('%m', created_at), emotion_id, sub_emotion_id`;
-            // const rows = db.all(sqlQuery, param, (err, rows) => {
-            //     if (err) {
-            //       console.error(err);
-            //       res.sendStatus(500);
-            //     } else {
-            //       res.json(rows);
-            //     }
-            //   }); 
-        const rows = await db.all(sqlQuery, [req.params.year]);
-        console.log(rows)
-        const serializedRows = JSON.stringify(rows);
+      const year = req.params.year;
+      const sql = 
+      `SELECT strftime('%m', created_at) AS created_at,
+      emotion_id,
+      sub_emotion_id,
+      COUNT(*) AS count
+      FROM emotions
+      WHERE strftime('%Y', created_at) = ?
+      GROUP BY strftime('%m', created_at), emotion_id, sub_emotion_id;`;
+      const params = [year];
+  
+      const rows = await db.all(sql, params, (err, rows) => {
+                        if (err) {
+                          console.error(err);
+                          res.sendStatus(500);
+                        } else {
+                          res.json(rows);
+                        }
+                      }); 
+        const serializedRows = await JSON.stringify(rows);
         console.log(`serialisoidut rivit ${serializedRows}`)
-
     } catch (err) {
         console.log(err)
-        // res.status(400).send(error.message);
     }
 });
+
+
 
 router.get("/getyears/:startyear/:endyear", async function (req, res) {
     try {
