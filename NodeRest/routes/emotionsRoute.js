@@ -208,24 +208,22 @@ router.get("/getweek/primary/:startdate/:enddate", async function (req, res) {
   }
 });
 
-// NEXT
-// [ ]
+
 router.get("/getmonth/primary/:year/:month", async function (req, res) {
   try {
-    console.log(req.params.month);
-    console.dir(db);
-    const sqlQuery =
-      "SELECT strftime('%d', created_at) AS created_at,\n" +
-      "emotion_id,\n" +
-      "COUNT(*) AS count,\n" +
-      "DATE(created_at) AS full_date\n" +
-      "FROM emotions\n" +
-      "WHERE strftime('%Y', created_at) = ?\n" +
-      "AND strftime('%m', created_at) = ?\n" +
-      "GROUP BY strftime('%d', created_at), emotion_id;";
-    const params = [req.params.month];
+    const month = req.params.month;
+    const year = req.params.year;
+    const sql = `SELECT strftime('%d', created_at) AS created_at,
+                       emotion_id,
+                       COUNT(*) AS count,
+                       strftime('%Y-%m-%d', created_at) AS full_date
+                       FROM emotions
+                       WHERE strftime('%Y', created_at) = ?
+                       AND strftime('%m', created_at) = ?
+                       GROUP BY strftime('%d', created_at), emotion_id`;
+    const params = [year, month];
 
-    const rows = await db.all(sqlQuery, params, (err, rows) => {
+    const rows = await db.all(sql, params, (err, rows) => {
       if (err) {
         console.error(err);
         res.sendStatus(500);
@@ -304,7 +302,7 @@ router.post("/addemotion", async function (req, res) {
       "INSERT INTO emotions (emotion_id, sub_emotion_id) VALUES (?, ?)";
     const result = await db.run(sqlQuery, [emotion, subEmotion]);
     console.log(req.body);
-    res.status(200).json({ emotionId: result.lastID.toString() });
+    res.status(200).json({ emotionId: result.insertID });
   } catch (error) {
     res.status(400).send(error.message);
   }
@@ -314,14 +312,17 @@ router.post("/addemotion", async function (req, res) {
 router.get("/getallemotions", async function (req, res) {
   try {
     const sqlQuery = "SELECT COUNT(*) AS count FROM emotions";
-    const rows = await db.all(sqlQuery);
-    console.log(rows); // add this line to see what the query is returning
-    const count = Number(rows[0].count); // extract count value and convert to number
-    console.log(count); // add this line to see what the count value is
-    res.status(200).json({ count: count }); // send count value as a JSON object
+    const rows = await db.all(sqlQuery, (err, rows) => {
+      if (err) {
+        console.error(err);
+        res.sendStatus(500);
+      } else {
+        res.json(rows);
+      }
+    });
   } catch (error) {
-    console.log(error); // add this line to see what error message is being returned
-    res.status(400).json({ error: error.message }); // send error message as a JSON object
+    console.log(error);
+    res.status(400).json({ error: error.message });
   }
 });
 
@@ -336,10 +337,18 @@ router.get("/gettodayemotions", async function (req, res) {
   console.log((date_ob.getTime() / 60) * 1000);
   try {
     const sqlQuery = `SELECT count(*) as count from emotions e where date(e.created_at) = ?`;
-    const rows = await db.all(sqlQuery, [date]);
-    console.log(rows); // add this line to see what the count value is
-    const count = Number(rows[0].count); // extract count value and convert to number
-    res.status(200).json({ count: count }); // send count value as a JSON object
+
+    const rows = await db.all(sqlQuery, [date], (err, rows) => {
+      if (err) {
+        console.error(err);
+        res.sendStatus(500);
+      } else {
+        res.json(rows);
+      }
+    });
+    // console.log(rows); // add this line to see what the count value is
+    // const count = Number(rows[0].count); // extract count value and convert to number
+    // res.status(200).json({ count: count }); // send count value as a JSON object
   } catch (error) {
     console.log(error); // add this line to see what error message is being returned
     res.status(400).json({ error: error.message }); // send error message as a JSON object

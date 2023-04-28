@@ -11,12 +11,12 @@
 
 // db.serialize(() => {
 //   db.run(`
-//     CREATE TABLE IF NOT EXISTS emotions (
-//       id INTEGER PRIMARY KEY AUTOINCREMENT,
-//       emotion_id INTEGER NOT NULL,
-//       sub_emotion_id INTEGER NOT NULL,
-//       created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-//     );
+//     // CREATE TABLE IF NOT EXISTS emotions (
+//     //   id INTEGER PRIMARY KEY AUTOINCREMENT,
+//     //   emotion_id INTEGER NOT NULL,
+//     //   sub_emotion_id INTEGER NOT NULL,
+//     //   created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+//     // );
 //   `);
 // });
 
