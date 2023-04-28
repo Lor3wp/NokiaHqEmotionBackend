@@ -208,7 +208,7 @@ router.get("/getweek/primary/:startdate/:enddate", async function (req, res) {
   }
 });
 
-
+// [x]
 router.get("/getmonth/primary/:year/:month", async function (req, res) {
     try {
       const month = req.params.month;
@@ -238,63 +238,67 @@ router.get("/getmonth/primary/:year/:month", async function (req, res) {
         console.log(err)
     }
 });
-// [ ]
+
+// [x]
 router.get("/getyear/primary/:year", async function (req, res) {
-  try {
-    console.log(req.params.year);
+    try {
+      const year = req.params.year;
+      const sqlQuery =
+        "SELECT strftime('%m', created_at) AS created_at,\n" +
+        "emotion_id,\n" +
+        "COUNT(*) AS count\n" +
+        "FROM emotions\n" +
+        "WHERE strftime('%Y', created_at) = ?\n" +
+        "GROUP BY strftime('%m', created_at), emotion_id;";
+      const params = [year];
+  
+      const rows = await db.all(sqlQuery, params, (err, rows) => {
+        if (err) {
+          console.error(err);
+          res.sendStatus(500);
+        } else {
+          res.json(rows);
+        }
+      });
+      const serializedRows = await JSON.stringify(rows);
+      console.log(`serialisoidut rivit ${serializedRows}`);
+    } catch (err) {
+      console.log(err);
+    }
+  });
 
-    const sqlQuery =
-      "SELECT strftime('%M', created_at) AS created_at,\n" +
-      "emotion_id,\n" +
-      "COUNT(*) AS count\n" +
-      "FROM emotions\n" +
-      "WHERE strftime('%Y', created_at) = ?\n" +
-      "GROUP BY strftime('%M', created_at), emotion_id;";
-    const params = [req.params.year];
 
-    const rows = await db.all(sqlQuery, params, (err, rows) => {
-      if (err) {
-        console.error(err);
-        res.sendStatus(500);
-      } else {
-        res.json(rows);
-      }
-    });
-    const serializedRows = await JSON.stringify(rows);
-    console.log(`serialisoidut rivit ${serializedRows}`);
-  } catch (err) {
-    console.log(err);
-  }
-});
-// [ ]
-router.get("/getyears/primary/:startyear/:endyear", async function (req, res) {
-  try {
-    console.log(req.params.startyear, req.params.endyear);
+// [x]
+  router.get("/getyears/primary/:startyear/:endyear", async function (req, res) {
+    try {
+      console.log(req.params.startyear, req.params.endyear);
+  
+      const sqlQuery =
+        "SELECT strftime('%Y', created_at) AS created_at,\n" +
+        "emotion_id,\n" +
+        "COUNT(*) AS count\n" +
+        "FROM emotions\n" +
+        "WHERE CAST(strftime('%Y', created_at) as INTEGER) BETWEEN ? AND ?\n" +
+        "GROUP BY strftime('%Y', created_at), emotion_id;";
+      const params = [req.params.startyear, req.params.endyear];
+  
+      const rows = await db.all(sqlQuery, params, (err, rows) => {
+        if (err) {
+          console.error(err);
+          res.sendStatus(500);
+        } else {
+          res.json(rows);
+        }
+      });
+      const serializedRows = await JSON.stringify(rows);
+      console.log(`serialisoidut rivit ${serializedRows}`);
+    } catch (err) {
+      console.log(err);
+    }
+  });
 
-    const sqlQuery =
-      "SELECT strftime('%Y', created_at) AS created_at,\n" +
-      "emotion_id,\n" +
-      "COUNT(*) AS count\n" +
-      "FROM emotions\n" +
-      "WHERE strftime('%Y', created_at) BETWEEN ? AND ?\n" +
-      "GROUP BY strftime('%Y', created_at), emotion_id;";
-    const params = [req.params.startyear, req.params.endyear];
 
-    const rows = await db.all(sqlQuery, params, (err, rows) => {
-      if (err) {
-        console.error(err);
-        res.sendStatus(500);
-      } else {
-        res.json(rows);
-      }
-    });
-    const serializedRows = await JSON.stringify(rows);
-    console.log(`serialisoidut rivit ${serializedRows}`);
-  } catch (err) {
-    console.log(err);
-  }
-});
-// [ ]
+// [x]
 router.post("/addemotion", async function (req, res) {
     try {
         const { emotion, subEmotion } = req.body;
@@ -309,7 +313,7 @@ router.post("/addemotion", async function (req, res) {
     }
 });
 
-// [ ]
+// [x]
 router.get("/getallemotions", async function (req, res) {
     try {
         const sqlQuery = "SELECT COUNT(*) AS count FROM emotions";
@@ -327,7 +331,7 @@ router.get("/getallemotions", async function (req, res) {
     }
 });
 
-// [ ]
+// [x]
 router.get("/gettodayemotions", async function (req, res) {
   let date_ob = new Date();
   let day = ("0" + date_ob.getDate()).slice(-2);
