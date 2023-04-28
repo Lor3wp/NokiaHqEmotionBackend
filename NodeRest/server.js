@@ -7,7 +7,7 @@ const cors = require("cors");
 const sqlite3 = require('sqlite3').verbose();
 
 // check if it already exists
-const db = new sqlite3.Database('../nokiahqemotiontrackersqlite.db', (err) => {
+const db = new sqlite3.Database('./nokiahqemotiontrackersqlite.db', (err) => {
   if (err) {
     console.error(err.message);
   } else {
