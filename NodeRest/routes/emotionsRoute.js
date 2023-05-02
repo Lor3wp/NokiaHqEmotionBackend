@@ -1,6 +1,18 @@
 const express = require("express");
 const db = require("../server");
 const router = express.Router();
+const net = require("net");
+
+const colors = [
+  { r: 255, g: 0, b: 0 }, // Red
+  { r: 0, g: 255, b: 0 }, // Green
+  { r: 0, g: 0, b: 255 }, // Blue
+  { r: 255, g: 255, b: 0 }, // Yellow
+  { r: 128, g: 0, b: 128 }, // Purple
+  { r: 255, g: 255, b: 255 }, // White
+];
+
+const numLeds = 2400;
 
 // [x]
 router.get("/getday/:year/:month/:day", async function (req, res) {
@@ -274,35 +286,57 @@ router.get("/getyears/primary/:startyear/:endyear", async function (req, res) {
     console.log(err);
   }
 });
+const tasker = async (i) => {
+  try {
+    const sqlQuery =
+      "SELECT emotion_id, COUNT(*) * 100.0 / (SELECT COUNT(*) FROM emotions) AS percentage FROM emotions GROUP BY emotion_id";
+    const rows = await db.all(sqlQuery, (err, rows) => {
+      if (err) {
+        console.error(err);
+      } else {
+        const percentages = [];
+        rows.map((emotion) => {
+          percentages[emotion.emotion_id - 1] =
+            Math.round(emotion.percentage * 100) / 100;
+        });
+        console.log(percentages);
+        const buffer = Buffer.alloc(2 + numLeds * 2 + 1);
 
+        let bufferPos = buffer.writeUInt16BE(0xffff, 0);
+
+        for (let i = 0; i < percentages.length; i++) {
+          const numColorLeds = Math.floor(percentages[i] * numLeds);
+          const color = colors[i];
+          for (let j = 0; j < numColorLeds; j++) {
+            const value =
+              ((color.r & 31) << 10) + ((color.g & 31) << 5) + (color.b & 31);
+            bufferPos = buffer.writeUInt16BE(value, bufferPos);
+          }
+        }
+
+        buffer.writeUInt8(0x80, bufferPos);
+
+        client = new net.Socket();
+        client.connect(3002, "localhost");
+        client.write(buffer);
+        client.end();
+
+        return rows;
+      }
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
 // [x]
 router.post("/addemotion", async function (req, res) {
-  const net = require("net");
-
-  red = 0;
-  green = 0;
-  blue = 31;
-
-  buffer = new Buffer.alloc(2 + 2400 * 2 + 1);
-  let bufpos = buffer.writeUInt16BE(0xffff, 0);
-  for (let led = 0; led < 2400; led++) {
-    bufpos = buffer.writeUint16BE(
-      ((red & 31) << 10) + ((green & 31) << 5) + (blue & 31),
-      bufpos
-    );
-  }
-  buffer.writeUint8(0x80, bufpos);
-
-  client = new net.Socket();
-  client.connect(3002, "localhost");
-  client.write(buffer);
-  client.end();
   try {
     const { emotion, subEmotion } = req.body;
     const sqlQuery =
       "INSERT INTO emotions (emotion_id, sub_emotion_id) VALUES (?, ?)";
     const result = await db.run(sqlQuery, [emotion, subEmotion]);
     res.status(200).json({ emotionId: result.insertID });
+    await tasker();
   } catch (error) {
     res.status(400).send(error.message);
   }
