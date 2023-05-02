@@ -5,7 +5,6 @@ const router = express.Router();
 // [x]
 router.get("/getday/:year/:month/:day", async function (req, res) {
   try {
-    console.log(req.params.year, req.params.month, req.params.day);
     const sqlQuery = `SELECT strftime('%H', created_at) AS created_at, 
        emotion_id, 
        sub_emotion_id, 
@@ -27,7 +26,6 @@ GROUP BY strftime('%H', created_at), emotion_id, sub_emotion_id;`;
       }
     });
     const serializedRows = await JSON.stringify(rows);
-    console.log(`serialisoidut rivit ${serializedRows}`);
   } catch (err) {
     console.log(err);
   }
@@ -57,7 +55,6 @@ router.get("/getweek/:startdate/:enddate", async function (req, res) {
       }
     });
     const serializedRows = await JSON.stringify(rows);
-    console.log(`serialisoidut rivit ${serializedRows}`);
   } catch (err) {
     console.log(err);
   }
@@ -88,7 +85,6 @@ router.get("/getmonth/:year/:month", async function (req, res) {
       }
     });
     const serializedRows = await JSON.stringify(rows);
-    console.log(`serialisoidut rivit ${serializedRows}`);
   } catch (err) {
     console.log(err);
   }
@@ -97,16 +93,16 @@ router.get("/getmonth/:year/:month", async function (req, res) {
 // [x]
 router.get("/getyear/:year", async function (req, res) {
   try {
-    const year = req.params.year;
-    const sqlQuery =
-        "SELECT strftime('%m', created_at) AS created_at,\n" +
-        "emotion_id,\n" +
-        "sub_emotion_id,\n" +
-        "COUNT(*) AS count\n" +
-        "FROM emotions\n" +
-        "WHERE CAST(strftime('%Y', created_at)as INTEGER) = ?\n" +
-        "GROUP BY strftime('%m', created_at), emotion_id, sub_emotion_id;";
-    const params = [year];
+    const param = req.params.year;
+    const sqlQuery = `SELECT strftime('%m', created_at) AS created_at,
+            emotion_id,
+            sub_emotion_id,
+            COUNT(*) AS count
+            FROM emotions
+            WHERE CAST(strftime('%Y', created_at)as INTEGER) = ?
+            GROUP BY strftime('%m', created_at), emotion_id, sub_emotion_id`;
+
+    const params = [req.params.year];
 
     const rows = await db.all(sqlQuery, params, (err, rows) => {
       if (err) {
@@ -117,7 +113,6 @@ router.get("/getyear/:year", async function (req, res) {
       }
     });
     const serializedRows = await JSON.stringify(rows);
-    console.log(`serialisoidut rivit ${serializedRows}`);
   } catch (err) {
     console.log(err);
   }
@@ -125,8 +120,6 @@ router.get("/getyear/:year", async function (req, res) {
 // [x]
 router.get("/getyears/:startyear/:endyear", async function (req, res) {
   try {
-    console.log(req.params.startyear, req.params.endyear);
-
     const sqlQuery =
       "SELECT strftime('%Y', created_at) AS created_at,\n" +
       "emotion_id,\n" +
@@ -146,7 +139,6 @@ router.get("/getyears/:startyear/:endyear", async function (req, res) {
       }
     });
     const serializedRows = await JSON.stringify(rows);
-    console.log(`serialisoidut rivit ${serializedRows}`);
   } catch (err) {
     console.log(err);
   }
@@ -154,7 +146,6 @@ router.get("/getyears/:startyear/:endyear", async function (req, res) {
 // [x]
 router.get("/getday/primary/:year/:month/:day", async function (req, res) {
   try {
-    console.log(req.params.year, req.params.month, req.params.day);
     const sqlQuery =
       "SELECT strftime('%H', created_at) AS created_at,\n" +
       "emotion_id,\n" +
@@ -174,7 +165,6 @@ router.get("/getday/primary/:year/:month/:day", async function (req, res) {
       }
     });
     const serializedRows = await JSON.stringify(rows);
-    console.log(`serialisoidut rivit ${serializedRows}`);
   } catch (err) {
     console.log(err);
   }
@@ -182,8 +172,6 @@ router.get("/getday/primary/:year/:month/:day", async function (req, res) {
 // [x]
 router.get("/getweek/primary/:startdate/:enddate", async function (req, res) {
   try {
-    console.log(req.params.startdate, req.params.enddate);
-
     const sqlQuery =
       "SELECT strftime('%d', created_at) AS created_at,\n" +
       "emotion_id,\n" +
@@ -203,7 +191,6 @@ router.get("/getweek/primary/:startdate/:enddate", async function (req, res) {
       }
     });
     const serializedRows = await JSON.stringify(rows);
-    console.log(`serialisoidut rivit ${serializedRows}`);
   } catch (err) {
     console.log(err);
   }
@@ -232,7 +219,6 @@ router.get("/getmonth/primary/:year/:month", async function (req, res) {
       }
     });
     const serializedRows = await JSON.stringify(rows);
-    console.log(`serialisoidut rivit ${serializedRows}`);
   } catch (err) {
     console.log(err);
   }
@@ -241,8 +227,6 @@ router.get("/getmonth/primary/:year/:month", async function (req, res) {
 // [x]
 router.get("/getyear/primary/:year", async function (req, res) {
   try {
-    console.log(req.params.year);
-
     const sqlQuery =
       "SELECT strftime('%M', created_at) AS created_at,\n" +
       "emotion_id,\n" +
@@ -261,16 +245,13 @@ router.get("/getyear/primary/:year", async function (req, res) {
       }
     });
     const serializedRows = await JSON.stringify(rows);
-    console.log(`serialisoidut rivit ${serializedRows}`);
   } catch (err) {
     console.log(err);
   }
 });
-// [ ]
+// [x]
 router.get("/getyears/primary/:startyear/:endyear", async function (req, res) {
   try {
-    console.log(req.params.startyear, req.params.endyear);
-
     const sqlQuery =
       "SELECT strftime('%Y', created_at) AS created_at,\n" +
       "emotion_id,\n" +
@@ -289,20 +270,29 @@ router.get("/getyears/primary/:startyear/:endyear", async function (req, res) {
       }
     });
     const serializedRows = await JSON.stringify(rows);
-    console.log(`serialisoidut rivit ${serializedRows}`);
   } catch (err) {
     console.log(err);
   }
 });
-// [ ]
+// [x]
 router.post("/addemotion", async function (req, res) {
   try {
     const { emotion, subEmotion } = req.body;
-    console.log(emotion + " " + subEmotion);
     const sqlQuery =
       "INSERT INTO emotions (emotion_id, sub_emotion_id) VALUES (?, ?)";
     const result = await db.run(sqlQuery, [emotion, subEmotion]);
-    console.log(req.body);
+    res.status(200).json({ emotionId: result.insertID });
+  } catch (error) {
+    res.status(400).send(error.message);
+  }
+});
+router.post("/addemotion/tablet", async function (req, res) {
+  // TODO check that it really is tablet or do better code for tabletcheck
+  try {
+    const { emotion, subEmotion } = req.body;
+    const sqlQuery =
+      "INSERT INTO emotions (emotion_id, sub_emotion_id) VALUES (?, ?)";
+    const result = await db.run(sqlQuery, [emotion, subEmotion]);
     res.status(200).json({ emotionId: result.insertID });
   } catch (error) {
     res.status(400).send(error.message);
@@ -335,7 +325,6 @@ router.get("/gettodayemotions", async function (req, res) {
   let year = date_ob.getFullYear();
 
   let date = year + "-" + month + "-" + day;
-  console.log((date_ob.getTime() / 60) * 1000);
   try {
     const sqlQuery = `SELECT count(*) as count from emotions e where date(e.created_at) = ?`;
 
