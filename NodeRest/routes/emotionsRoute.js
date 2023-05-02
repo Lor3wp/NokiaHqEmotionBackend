@@ -236,7 +236,8 @@ router.get("/getmonth/primary/:year/:month", async function (req, res) {
     console.log(err);
   }
 });
-// [ ]
+
+// [x]
 router.get("/getyear/primary/:year", async function (req, res) {
   try {
     console.log(req.params.year);
@@ -307,7 +308,7 @@ router.post("/addemotion", async function (req, res) {
   }
 });
 
-// [ ]
+// [x]
 router.get("/getallemotions", async function (req, res) {
   try {
     const sqlQuery = "SELECT COUNT(*) AS count FROM emotions";
@@ -325,7 +326,7 @@ router.get("/getallemotions", async function (req, res) {
   }
 });
 
-// [ ]
+// [x]
 router.get("/gettodayemotions", async function (req, res) {
   let date_ob = new Date();
   let day = ("0" + date_ob.getDate()).slice(-2);
