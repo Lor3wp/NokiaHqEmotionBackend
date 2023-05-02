@@ -274,8 +274,29 @@ router.get("/getyears/primary/:startyear/:endyear", async function (req, res) {
     console.log(err);
   }
 });
+
 // [x]
 router.post("/addemotion", async function (req, res) {
+  const net = require("net");
+
+  red = 0;
+  green = 0;
+  blue = 31;
+
+  buffer = new Buffer.alloc(2 + 2400 * 2 + 1);
+  let bufpos = buffer.writeUInt16BE(0xffff, 0);
+  for (let led = 0; led < 2400; led++) {
+    bufpos = buffer.writeUint16BE(
+      ((red & 31) << 10) + ((green & 31) << 5) + (blue & 31),
+      bufpos
+    );
+  }
+  buffer.writeUint8(0x80, bufpos);
+
+  client = new net.Socket();
+  client.connect(3002, "localhost");
+  client.write(buffer);
+  client.end();
   try {
     const { emotion, subEmotion } = req.body;
     const sqlQuery =
