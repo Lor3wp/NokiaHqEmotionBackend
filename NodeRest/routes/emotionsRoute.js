@@ -31,18 +31,20 @@ GROUP BY strftime('%H', created_at), emotion_id, sub_emotion_id;`;
   }
 });
 // [x]
-router.get("/getyear/:year", async function (req, res) {
+
+router.get("/getweek/:startdate/:enddate", async function (req, res) {
   try {
-    const year = req.params.year;
-    const sqlQuery =
-      "SELECT strftime('%m', created_at) AS created_at,\n" +
-      "emotion_id,\n" +
-      "sub_emotion_id,\n" +
-      "COUNT(*) AS count\n" +
-      "FROM emotions\n" +
-      "WHERE CAST(strftime('%Y', created_at)as INTEGER) = ?\n" +
-      "GROUP BY strftime('%m', created_at), emotion_id, sub_emotion_id;";
-    const params = [year];
+    console.log(req.params.startdate, req.params.enddate);
+
+    const sqlQuery = `SELECT strftime('%d', created_at) AS created_at,
+        emotion_id,
+        sub_emotion_id,
+        COUNT(*) AS count,
+        DATE(created_at) AS full_date
+        FROM emotions
+        WHERE DATE(created_at) BETWEEN ? AND ?\n
+        GROUP BY strftime('%d', created_at), emotion_id, sub_emotion_id;`;
+    const params = [req.params.startdate, req.params.enddate];
 
     const rows = await db.all(sqlQuery, params, (err, rows) => {
       if (err) {
