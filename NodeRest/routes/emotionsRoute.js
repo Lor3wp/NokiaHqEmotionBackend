@@ -294,25 +294,24 @@ const tasker = async (i) => {
       if (err) {
         console.error(err);
       } else {
+        let full = 0;
         const percentages = [];
         rows.map((emotion) => {
-          percentages[emotion.emotion_id - 1] =
-            Math.round(emotion.percentage * 100) / 100;
+          if (emotion.emotion_id != 6) {
+            percentages[emotion.emotion_id - 1] = Math.round(
+              (emotion.percentage / 100) * 100
+            );
+            full += Math.round((emotion.percentage / 100) * 100);
+          }
         });
-        let full = 0;
-        percentages.map((p) => {
-          full += p;
-        });
-        if (full < 100) {
-          percentages[5] += 100 - full;
-        }
-        console.log(percentages);
+        percentages[5] = 100 - full;
+
         const buffer = Buffer.alloc(2 + numLeds * 2 + 1);
 
         let bufferPos = buffer.writeUInt16BE(0xffff, 0);
 
         for (let i = 0; i < percentages.length; i++) {
-          const numColorLeds = Math.floor(percentages[i] * numLeds);
+          const numColorLeds = Math.floor((percentages[i] * numLeds) / 100);
           const color = colors[i];
           for (let j = 0; j < numColorLeds; j++) {
             const value =
