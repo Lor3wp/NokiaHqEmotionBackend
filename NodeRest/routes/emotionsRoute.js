@@ -304,7 +304,7 @@ const tasker = async (i) => {
           full += p;
         });
         if (full < 100) {
-          p[5] += 100 - full;
+          percentages[5] += 100 - full;
         }
         console.log(percentages);
         const buffer = Buffer.alloc(2 + numLeds * 2 + 1);
