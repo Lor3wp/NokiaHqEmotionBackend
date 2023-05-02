@@ -16,3 +16,4 @@ DROP emotions
 
 
 
+`SELECT strftime('%d', created_at) AS created_at, emotion_id,COUNT(*) AS count,strftime('%Y-%m-%d', created_at) AS full_date FROM emotions WHERE strftime('%Y', created_at) = 2023 AND strftime('%m', created_at) = 04 GROUP BY strftime('%d', created_at), emotion_id`;

@@ -12,9 +12,9 @@ router.get("/getday/:year/:month/:day", async function (req, res) {
        COUNT(*) AS count, 
        date(created_at) AS full_date 
 FROM emotions 
-WHERE strftime('%Y', created_at) = ? 
-  AND strftime('%m', created_at) = ? 
-  AND strftime('%d', created_at) = ? 
+WHERE CAST(strftime('%Y', created_at)as INTEGER) = ? 
+  AND CAST(strftime('%m', created_at)as INTEGER) = ? 
+  AND CAST(strftime('%d', created_at)as INTEGER) = ? 
 GROUP BY strftime('%H', created_at), emotion_id, sub_emotion_id;`;
     const params = [req.params.year, req.params.month, req.params.day];
 
@@ -42,7 +42,7 @@ router.get("/getyear/:year", async function (req, res) {
       "sub_emotion_id,\n" +
       "COUNT(*) AS count\n" +
       "FROM emotions\n" +
-      "WHERE strftime('%Y', created_at) = ?\n" +
+      "WHERE CAST(strftime('%Y', created_at)as INTEGER) = ?\n" +
       "GROUP BY strftime('%m', created_at), emotion_id, sub_emotion_id;";
     const params = [year];
 
@@ -72,8 +72,8 @@ router.get("/getmonth/:year/:month", async function (req, res) {
                        COUNT(*) AS count,
                        strftime('%Y-%m-%d', created_at) AS full_date
                        FROM emotions
-                       WHERE strftime('%Y', created_at) = ?
-                       AND strftime('%m', created_at) = ?
+                       WHERE CAST(strftime('%Y', created_at)as INTEGER) = ?
+                       AND CAST(strftime('%m', created_at)as INTEGER) = ?
                        GROUP BY strftime('%d', created_at), emotion_id, sub_emotion_id`;
     const params = [year, month];
 
@@ -102,7 +102,7 @@ router.get("/getyear/:year", async function (req, res) {
             sub_emotion_id,
             COUNT(*) AS count
             FROM emotions
-            WHERE strftime('%Y', created_at) = ?
+            WHERE CAST(strftime('%Y', created_at)as INTEGER) = ?
             GROUP BY strftime('%m', created_at), emotion_id, sub_emotion_id`;
 
     const params = [req.params.year];
@@ -160,7 +160,7 @@ router.get("/getday/primary/:year/:month/:day", async function (req, res) {
       "COUNT(*) AS count,\n" +
       "DATE(created_at) AS full_date\n" +
       "FROM emotions\n" +
-      "WHERE strftime('%Y', created_at) = ? AND strftime('%M', created_at) = ? AND strftime('%d', created_at) = ?\n" +
+      "WHERE CAST(strftime('%Y', created_at)as INTEGER) = ? AND CAST(strftime('%M', created_at)as INTEGER) = ? AND CAST(strftime('%d', created_at)as INTEGER) = ?\n" +
       "GROUP BY strftime('%H', created_at), emotion_id;";
     const params = [req.params.year, req.params.month, req.params.day];
 
@@ -208,7 +208,6 @@ router.get("/getweek/primary/:startdate/:enddate", async function (req, res) {
   }
 });
 
-
 router.get("/getmonth/primary/:year/:month", async function (req, res) {
   try {
     const month = req.params.month;
@@ -218,8 +217,8 @@ router.get("/getmonth/primary/:year/:month", async function (req, res) {
                        COUNT(*) AS count,
                        strftime('%Y-%m-%d', created_at) AS full_date
                        FROM emotions
-                       WHERE strftime('%Y', created_at) = ?
-                       AND strftime('%m', created_at) = ?
+                       WHERE CAST(strftime('%Y', created_at)as INTEGER) = ?
+                       AND CAST(strftime('%m', created_at)as INTEGER) = ?
                        GROUP BY strftime('%d', created_at), emotion_id`;
     const params = [year, month];
 
@@ -247,7 +246,7 @@ router.get("/getyear/primary/:year", async function (req, res) {
       "emotion_id,\n" +
       "COUNT(*) AS count\n" +
       "FROM emotions\n" +
-      "WHERE strftime('%Y', created_at) = ?\n" +
+      "WHERE CAST(strftime('%Y', created_at)as INTEGER) = ?\n" +
       "GROUP BY strftime('%M', created_at), emotion_id;";
     const params = [req.params.year];
 
@@ -275,7 +274,7 @@ router.get("/getyears/primary/:startyear/:endyear", async function (req, res) {
       "emotion_id,\n" +
       "COUNT(*) AS count\n" +
       "FROM emotions\n" +
-      "WHERE strftime('%Y', created_at) BETWEEN ? AND ?\n" +
+      "WHERE CAST(strftime('%Y', created_at)as INTEGER) BETWEEN ? AND ?\n" +
       "GROUP BY strftime('%Y', created_at), emotion_id;";
     const params = [req.params.startyear, req.params.endyear];
 
