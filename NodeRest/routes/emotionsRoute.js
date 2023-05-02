@@ -247,7 +247,7 @@ router.get("/getyear/primary/:year", async function (req, res) {
     console.log(err);
   }
 });
-// [ ]
+// [x]
 router.get("/getyears/primary/:startyear/:endyear", async function (req, res) {
   try {
     const sqlQuery =
@@ -272,7 +272,7 @@ router.get("/getyears/primary/:startyear/:endyear", async function (req, res) {
     console.log(err);
   }
 });
-// [ ]
+// [x]
 router.post("/addemotion", async function (req, res) {
   try {
     const { emotion, subEmotion } = req.body;
