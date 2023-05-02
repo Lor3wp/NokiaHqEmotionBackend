@@ -288,9 +288,12 @@ router.get("/getyears/primary/:startyear/:endyear", async function (req, res) {
 });
 const tasker = async (i) => {
   try {
+    const today = new Date();
+    const a = today.getMonth() + 1;
+    const b = today.getFullYear();
     const sqlQuery =
-      "SELECT emotion_id, COUNT(*) * 100.0 / (SELECT COUNT(*) FROM emotions) AS percentage FROM emotions GROUP BY emotion_id";
-    const rows = await db.all(sqlQuery, (err, rows) => {
+      "SELECT emotion_id, COUNT(*) * 100.0 / (SELECT COUNT(*) FROM emotions) AS percentage, created_at as created_at FROM emotions WHERE CAST(strftime('%m', created_at)as INTEGER) = ? AND CAST(strftime('%Y', created_at)as INTEGER) = ?  GROUP BY emotion_id";
+    const rows = await db.all(sqlQuery, [a, b], (err, rows) => {
       if (err) {
         console.error(err);
       } else {
