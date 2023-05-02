@@ -1,19 +1,23 @@
-const mariadb = require("mariadb");
-const pool = mariadb.createPool({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASS,
-  database: process.env.DB_NAME,
-});
+// const sqlite3 = require('sqlite3').verbose();
 
-pool.getConnection((err, connection) => {
-  if (err) {
-    if (err.code === "PROTOCOL_CONNECTION_LOST") {
-      console.log("Database connection lost");
-    }
-  }
-  if (connection) connection.release();
-  return;
-});
+// // check if it already exists
+// const db = new sqlite3.Database('../nokiahqemotiontrackersqlite.db', (err) => {
+//   if (err) {
+//     console.error(err.message);
+//   } else {
+//     console.log('Connected to the database.');
+//   }
+// });
 
-module.exports = pool;
+// db.serialize(() => {
+//   db.run(`
+//     // CREATE TABLE IF NOT EXISTS emotions (
+//     //   id INTEGER PRIMARY KEY AUTOINCREMENT,
+//     //   emotion_id INTEGER NOT NULL,
+//     //   sub_emotion_id INTEGER NOT NULL,
+//     //   created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+//     // );
+//   `);
+// });
+
+// module.exports = db;
