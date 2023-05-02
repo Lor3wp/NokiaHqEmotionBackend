@@ -12,7 +12,7 @@ const colors = [
   { r: 255, g: 255, b: 255 }, // White
 ];
 
-const numLeds = 2400;
+const numLeds = 300;
 
 // [x]
 router.get("/getday/:year/:month/:day", async function (req, res) {
@@ -299,6 +299,13 @@ const tasker = async (i) => {
           percentages[emotion.emotion_id - 1] =
             Math.round(emotion.percentage * 100) / 100;
         });
+        let full = 0;
+        percentages.map((p) => {
+          full += p;
+        });
+        if (full < 100) {
+          p[5] += 100 - full;
+        }
         console.log(percentages);
         const buffer = Buffer.alloc(2 + numLeds * 2 + 1);
 
