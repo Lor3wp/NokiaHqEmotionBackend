@@ -14,6 +14,8 @@ const colors = [
   { r: 0, g: 0, b: 0 }, // filler if there is less led than 2400
 ];
 
+const colorTime = 2000;
+
 const numLeds = 2400;
 const ledsInUse = 300;
 // [x]
@@ -309,7 +311,6 @@ GROUP BY emotion_id;
           let full = 0;
           const percentages = [0];
           rows.map((emotion) => {
-            console.log(emotion.percentage);
             if (emotion.emotion_id != 6) {
               percentages[emotion.emotion_id] =
                 Math.floor(emotion.percentage * 100) / 100;
@@ -322,7 +323,6 @@ GROUP BY emotion_id;
           }
           percentages[0] = 12.5;
           percentages.push(75);
-          console.log(full);
           console.log(percentages);
           const buffer = Buffer.alloc(2 + numLeds * 2 + 1);
 
@@ -339,7 +339,6 @@ GROUP BY emotion_id;
           }
 
           buffer.writeUInt8(0x80, bufferPos);
-          console.log(buffer);
 
           client = new net.Socket();
           client.connect(3002, "localhost");
@@ -370,12 +369,11 @@ const taskerTablet = async (rgb) => {
     );
   }
   buffer.writeUint8(0x80, bufpos);
-  console.log(buffer);
+  console.log(rgb);
   client = new net.Socket();
   client.connect(3002, "localhost");
   client.write(buffer);
   client.end();
-  console.log("localhost");
   return true;
 };
 router.post("/addemotion", async function (req, res) {
@@ -400,7 +398,7 @@ router.post("/addtabletemotion", async function (req, res) {
     const result = await db.run(sqlQuery, [emotion, subEmotion]);
     await taskerTablet(colors[emotion]);
     // TODO delay here
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    await new Promise((resolve) => setTimeout(resolve, colorTime));
 
     await tasker();
     res.status(200).json({ emotionId: result.insertID });
