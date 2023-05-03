@@ -396,13 +396,12 @@ router.post("/addtabletemotion", async function (req, res) {
     const sqlQuery =
       "INSERT INTO emotions (emotion_id, sub_emotion_id) VALUES (?, ?)";
     const result = await db.run(sqlQuery, [emotion, subEmotion]);
-    res.status(200).json({ emotionId: result.insertID });
     await taskerTablet(colors[emotion]);
     await delay(2000);
     await tasker();
     // await tasker();
+    res.status(200).json({ emotionId: result.insertID });
     // TODO timer for 2 seconds, tasker() takes 2 seconds to be done
-    return; // Add this return statement to prevent sending response again
   } catch (error) {
     res.status(400).send(error.message);
   }
