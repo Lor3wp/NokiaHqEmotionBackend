@@ -1,9 +1,9 @@
 const express = require("express");
 const dotenv = require("dotenv");
 dotenv.config({ path: ".env-local" });
-const cors = require("cors");
 const fs = require("fs");
 const https = require("https");
+const cors = require("cors");
 
 const sqlite3 = require("sqlite3").verbose();
 
