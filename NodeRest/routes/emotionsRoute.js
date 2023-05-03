@@ -4,16 +4,17 @@ const router = express.Router();
 const net = require("net");
 
 const colors = [
-  { r: 31, g: 0, b: 0 }, // Red
-  { r: 0, g: 31, b: 0 }, // Green
-  { r: 0, g: 0, b: 31 }, // Blue
-  { r: 31, g: 31, b: 0 }, // Yellow
-  { r: 15, g: 0, b: 15 }, // Purple
-  { r: 31, g: 31, b: 31 }, // White
+  { r: 7, g: 18, b: 23 }, // Happy
+  { r: 31, g: 10, b: 10 }, // Angry
+  { r: 15, g: 8, b: 19 }, // Scared
+  { r: 31, g: 31, b: 6 }, // Exited
+  { r: 8, g: 13, b: 22 }, // Sad
+  { r: 26, g: 26, b: 26 }, // Neutral
+  { r: 31, g: 31, b: 31 }, // filler if there is less led than 2400
 ];
 
 const numLeds = 2400;
-
+const ledsInUse = 300;
 // [x]
 router.get("/getday/:year/:month/:day", async function (req, res) {
   try {
@@ -315,9 +316,13 @@ GROUP BY emotion_id;
             }
           });
           percentages[5] = Math.round((100 - full) * 100) / 100;
+          for (let i in percentages) {
+            percentages[i] = percentages[i] * 0.125;
+          }
+          percentages.push(87.5);
           console.log(full);
           console.log(percentages);
-
+          // console.log(ledsInUse);
           const buffer = Buffer.alloc(2 + numLeds * 2 + 1);
 
           let bufferPos = buffer.writeUInt16BE(0xffff, 0);
@@ -348,30 +353,28 @@ GROUP BY emotion_id;
     console.log(error);
   }
 };
-[x];
+// [x];
 
-// const tasker = async () => {
-  
-// red = 31;
-// green = 0;
-//   blue = 0;
+const taskerTablet = async (rgb) => {
+  red = rgb.r;
+  green = rgb.g;
+  blue = rgb.b;
 
-// buffer = new Buffer.alloc(2 + 300 * 2 + 1);
-// let bufpos = buffer.writeUInt16BE(0xffff, 0);
-// for (let led = 0; led < 300; led++) {
-//   bufpos = buffer.writeUint16BE(
-//     ((red & 31) << 10) + ((green & 31) << 5) + (blue & 31),
-//     bufpos
-//   );
-// }
-// buffer.writeUint8(0x80, bufpos);
-//   console.log(buffer
-//   );
-// client = new net.Socket();
-// client.connect(3002, "localhost");
-// client.write(buffer);
-// client.end();
-// }
+  buffer = new Buffer.alloc(2 + 2400 * 2 + 1);
+  let bufpos = buffer.writeUInt16BE(0xffff, 0);
+  for (let led = 0; led < 2400; led++) {
+    bufpos = buffer.writeUint16BE(
+      ((red & 31) << 10) + ((green & 31) << 5) + (blue & 31),
+      bufpos
+    );
+  }
+  buffer.writeUint8(0x80, bufpos);
+  console.log(buffer);
+  client = new net.Socket();
+  client.connect(3002, "localhost");
+  client.write(buffer);
+  client.end();
+};
 router.post("/addemotion", async function (req, res) {
   try {
     const { emotion, subEmotion } = req.body;
@@ -392,6 +395,8 @@ router.post("/addemotion/tablet", async function (req, res) {
       "INSERT INTO emotions (emotion_id, sub_emotion_id) VALUES (?, ?)";
     const result = await db.run(sqlQuery, [emotion, subEmotion]);
     res.status(200).json({ emotionId: result.insertID });
+    taskerTablet(colors[emotion - 1]);
+    // TODO timer for 2 seconds, tasker() takes 2 seconds to be done
   } catch (error) {
     res.status(400).send(error.message);
   }
