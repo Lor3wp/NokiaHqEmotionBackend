@@ -308,21 +308,19 @@ GROUP BY emotion_id;
           console.log(rows);
           let full = 0;
           const percentages = [];
-          percentages.push(0);
+          percentages.push(12.5);
           rows.map((emotion) => {
             console.log(emotion.percentage);
             if (emotion.emotion_id != 6) {
-              console.log(percentages);
               percentages[emotion.emotion_id] =
                 Math.floor(emotion.percentage * 100) / 100;
               full += Math.floor(emotion.percentage * 100) / 100;
             }
           });
-          percentages[5] = Math.round((100 - full) * 100) / 100;
+          percentages[6] = Math.round((100 - full) * 100) / 100;
           for (let i in percentages) {
             percentages[i] = percentages[i] * 0.125;
           }
-          percentages[0] = 12.5;
           percentages.push(75);
           console.log(full);
           console.log(percentages);
