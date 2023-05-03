@@ -307,8 +307,7 @@ GROUP BY emotion_id;
         } else {
           console.log(rows);
           let full = 0;
-          const percentages = [];
-          percentages.push(12.5);
+          const percentages = [0];
           rows.map((emotion) => {
             console.log(emotion.percentage);
             if (emotion.emotion_id != 6) {
@@ -321,10 +320,10 @@ GROUP BY emotion_id;
           for (let i in percentages) {
             percentages[i] = percentages[i] * 0.125;
           }
+          percentages[0] = 12.5;
           percentages.push(75);
           console.log(full);
           console.log(percentages);
-          // console.log(ledsInUse);
           const buffer = Buffer.alloc(2 + numLeds * 2 + 1);
 
           let bufferPos = buffer.writeUInt16BE(0xffff, 0);
