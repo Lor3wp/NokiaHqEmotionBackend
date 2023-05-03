@@ -1,8 +1,6 @@
 const express = require("express");
 const dotenv = require("dotenv");
 dotenv.config({ path: ".env-local" });
-const fs = require("fs");
-const https = require("https");
 const cors = require("cors");
 
 const sqlite3 = require("sqlite3").verbose();
@@ -29,11 +27,6 @@ db.serialize(() => {
 
 module.exports = db;
 
-const options = {
-  key: fs.readFileSync("./private.key"),
-  cert: fs.readFileSync("./certificate.crt"),
-};
-
 const PORT = process.env.PORT || "3001";
 
 const app = express();
@@ -50,28 +43,19 @@ app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Credentials", true);
   next();
 });
-app.use(
-  cors({
-    origin: "http://localhost:3000",
-    credentials: true,
-  })
-);
+app.use(cors());
 // middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 // routes
-// app.get("/", (req, res) => {
-//   res.status(200).json({ name: "pavel", doing: "coding" });
-// });
-
 const addRouter = require("./routes/addEmotion");
 app.use("/add", addRouter);
 
 const emotionsRouter = require("./routes/emotionsRoute");
 app.use("/emotions", emotionsRouter);
 
-// create the HTTPS server
-https.createServer(options, app).listen(PORT, () => {
+// create the HTTP server
+app.listen(PORT, () => {
   console.log(`listening for requests on port ${PORT}`);
 });
