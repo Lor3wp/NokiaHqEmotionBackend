@@ -400,7 +400,6 @@ router.post("/addtabletemotion", async function (req, res) {
     const result = await db.run(sqlQuery, [emotion, subEmotion]);
     await taskerTablet(colors[emotion]);
     console.log(colors[emotion]);
-    await delay(2000);
     console.log("tasker");
     await tasker();
     res.status(200).json({ emotionId: result.insertID });
