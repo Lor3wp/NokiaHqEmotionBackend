@@ -312,6 +312,7 @@ GROUP BY emotion_id;
           rows.map((emotion) => {
             console.log(emotion.percentage);
             if (emotion.emotion_id != 6) {
+              console.log(percentages);
               percentages[emotion.emotion_id] =
                 Math.floor(emotion.percentage * 100) / 100;
               full += Math.floor(emotion.percentage * 100) / 100;
