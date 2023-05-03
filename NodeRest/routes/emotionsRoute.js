@@ -389,7 +389,7 @@ router.post("/addemotion", async function (req, res) {
     res.status(400).send(error.message);
   }
 });
-router.post("/addemotion/tablet", async function (req, res) {
+router.post("/addtabletemotion/", async function (req, res) {
   // TODO check that it really is tablet or do better code for tabletcheck
   try {
     const { emotion, subEmotion } = req.body;
