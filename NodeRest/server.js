@@ -50,7 +50,12 @@ app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Credentials", true);
   next();
 });
-
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+    credentials: true,
+  })
+);
 // middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
