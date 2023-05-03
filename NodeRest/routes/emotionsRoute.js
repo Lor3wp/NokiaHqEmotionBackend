@@ -311,7 +311,7 @@ GROUP BY emotion_id;
           rows.map((emotion) => {
             console.log(emotion.percentage);
             if (emotion.emotion_id != 6) {
-              percentages[emotion.emotion_id - 1] =
+              percentages[emotion.emotion_id] =
                 Math.floor(emotion.percentage * 100) / 100;
               full += Math.floor(emotion.percentage * 100) / 100;
             }
@@ -396,7 +396,8 @@ router.post("/addemotion/tablet", async function (req, res) {
       "INSERT INTO emotions (emotion_id, sub_emotion_id) VALUES (?, ?)";
     const result = await db.run(sqlQuery, [emotion, subEmotion]);
     res.status(200).json({ emotionId: result.insertID });
-    taskerTablet(colors[emotion - 1]);
+    // taskerTablet(colors[emotion - 1]);
+    await tasker();
     // TODO timer for 2 seconds, tasker() takes 2 seconds to be done
   } catch (error) {
     res.status(400).send(error.message);
