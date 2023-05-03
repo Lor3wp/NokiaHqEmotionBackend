@@ -375,6 +375,7 @@ const taskerTablet = async (rgb) => {
   client.connect(3002, "localhost");
   client.write(buffer);
   client.end();
+  console.log("localhost");
   return true;
 };
 router.post("/addemotion", async function (req, res) {
