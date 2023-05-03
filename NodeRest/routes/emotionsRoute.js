@@ -12,7 +12,7 @@ const colors = [
   { r: 31, g: 31, b: 31 }, // White
 ];
 
-const numLeds = 300;
+const numLeds = 2400;
 
 // [x]
 router.get("/getday/:year/:month/:day", async function (req, res) {
@@ -286,92 +286,92 @@ router.get("/getyears/primary/:startyear/:endyear", async function (req, res) {
     console.log(err);
   }
 });
-// const tasker = async () => {
-//   const today = new Date();
-//   let month = today.getMonth() + 1;
-//   let year = today.getFullYear();
-//   try {
-//     const sqlQuery = `SELECT emotion_id, COUNT(*) * 100.0 / (SELECT COUNT(*) FROM emotions WHERE CAST(strftime('%Y', created_at) AS INTEGER) = ? AND CAST(strftime('%m', created_at) AS INTEGER) = ?) AS percentage
-// FROM emotions
-// WHERE CAST(strftime('%Y', created_at) AS INTEGER) = ? AND CAST(strftime('%m', created_at) AS INTEGER) = ?
-// GROUP BY emotion_id;
-// `;
-//     const rows = await db.all(
-//       sqlQuery,
-//       [year, month, year, month],
-//       (err, rows) => {
-//         if (err) {
-//           console.error(err);
-//         } else {
-//           console.log(rows);
-//           let full = 0;
-//           const percentages = [];
-//           rows.map((emotion) => {
-//             console.log(emotion.percentage);
-//             if (emotion.emotion_id != 6) {
-//               percentages[emotion.emotion_id - 1] =
-//                 Math.floor(emotion.percentage * 100) / 100;
-//               full += Math.floor(emotion.percentage * 100) / 100;
-//             }
-//           });
-//           percentages[5] = Math.round((100 - full) * 100) / 100;
-//           console.log(full);
-//           console.log(percentages);
-
-//           const buffer = Buffer.alloc(2 + numLeds * 2 + 1);
-
-//           let bufferPos = buffer.writeUInt16BE(0xffff, 0);
-
-//           for (let i = 0; i < percentages.length; i++) {
-//             const numColorLeds = Math.floor((percentages[i] * numLeds) / 100);
-//             const color = colors[i];
-//             for (let j = 0; j < numColorLeds; j++) {
-//               const value =
-//                 ((color.r & 31) << 10) + ((color.g & 31) << 5) + (color.b & 31);
-//               bufferPos = buffer.writeUInt16BE(value, bufferPos);
-//             }
-//           }
-
-//           buffer.writeUInt8(0x80, bufferPos);
-//           console.log(buffer);
-
-//           client = new net.Socket();
-//           client.connect(3002, "localhost");
-//           client.write(buffer);
-//           client.end();
-
-//           return rows;
-//         }
-//       }
-//     );
-//   } catch (error) {
-//     console.log(error);
-//   }
-// };
-// [x]
-
 const tasker = async () => {
-  
-red = 31;
-green = 0;
-  blue = 0;
+  const today = new Date();
+  let month = today.getMonth() + 1;
+  let year = today.getFullYear();
+  try {
+    const sqlQuery = `SELECT emotion_id, COUNT(*) * 100.0 / (SELECT COUNT(*) FROM emotions WHERE CAST(strftime('%Y', created_at) AS INTEGER) = ? AND CAST(strftime('%m', created_at) AS INTEGER) = ?) AS percentage
+FROM emotions
+WHERE CAST(strftime('%Y', created_at) AS INTEGER) = ? AND CAST(strftime('%m', created_at) AS INTEGER) = ?
+GROUP BY emotion_id;
+`;
+    const rows = await db.all(
+      sqlQuery,
+      [year, month, year, month],
+      (err, rows) => {
+        if (err) {
+          console.error(err);
+        } else {
+          console.log(rows);
+          let full = 0;
+          const percentages = [];
+          rows.map((emotion) => {
+            console.log(emotion.percentage);
+            if (emotion.emotion_id != 6) {
+              percentages[emotion.emotion_id - 1] =
+                Math.floor(emotion.percentage * 100) / 100;
+              full += Math.floor(emotion.percentage * 100) / 100;
+            }
+          });
+          percentages[5] = Math.round((100 - full) * 100) / 100;
+          console.log(full);
+          console.log(percentages);
 
-buffer = new Buffer.alloc(2 + 300 * 2 + 1);
-let bufpos = buffer.writeUInt16BE(0xffff, 0);
-for (let led = 0; led < 300; led++) {
-  bufpos = buffer.writeUint16BE(
-    ((red & 31) << 10) + ((green & 31) << 5) + (blue & 31),
-    bufpos
-  );
-}
-buffer.writeUint8(0x80, bufpos);
-  console.log(buffer
-  );
-client = new net.Socket();
-client.connect(3002, "localhost");
-client.write(buffer);
-client.end();
-}
+          const buffer = Buffer.alloc(2 + numLeds * 2 + 1);
+
+          let bufferPos = buffer.writeUInt16BE(0xffff, 0);
+
+          for (let i = 0; i < percentages.length; i++) {
+            const numColorLeds = Math.floor((percentages[i] * numLeds) / 100);
+            const color = colors[i];
+            for (let j = 0; j < numColorLeds; j++) {
+              const value =
+                ((color.r & 31) << 10) + ((color.g & 31) << 5) + (color.b & 31);
+              bufferPos = buffer.writeUInt16BE(value, bufferPos);
+            }
+          }
+
+          buffer.writeUInt8(0x80, bufferPos);
+          console.log(buffer);
+
+          client = new net.Socket();
+          client.connect(3002, "localhost");
+          client.write(buffer);
+          client.end();
+
+          return rows;
+        }
+      }
+    );
+  } catch (error) {
+    console.log(error);
+  }
+};
+[x];
+
+// const tasker = async () => {
+  
+// red = 31;
+// green = 0;
+//   blue = 0;
+
+// buffer = new Buffer.alloc(2 + 300 * 2 + 1);
+// let bufpos = buffer.writeUInt16BE(0xffff, 0);
+// for (let led = 0; led < 300; led++) {
+//   bufpos = buffer.writeUint16BE(
+//     ((red & 31) << 10) + ((green & 31) << 5) + (blue & 31),
+//     bufpos
+//   );
+// }
+// buffer.writeUint8(0x80, bufpos);
+//   console.log(buffer
+//   );
+// client = new net.Socket();
+// client.connect(3002, "localhost");
+// client.write(buffer);
+// client.end();
+// }
 router.post("/addemotion", async function (req, res) {
   try {
     const { emotion, subEmotion } = req.body;
