@@ -402,6 +402,7 @@ router.post("/addtabletemotion/", async function (req, res) {
     await tasker();
     // await tasker();
     // TODO timer for 2 seconds, tasker() takes 2 seconds to be done
+    return; // Add this return statement to prevent sending response again
   } catch (error) {
     res.status(400).send(error.message);
   }
