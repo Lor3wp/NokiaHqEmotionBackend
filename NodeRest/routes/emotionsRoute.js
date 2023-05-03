@@ -4,12 +4,12 @@ const router = express.Router();
 const net = require("net");
 
 const colors = [
-  { r: 255, g: 0, b: 0 }, // Red
-  { r: 0, g: 255, b: 0 }, // Green
-  { r: 0, g: 0, b: 255 }, // Blue
-  { r: 255, g: 255, b: 0 }, // Yellow
-  { r: 128, g: 0, b: 128 }, // Purple
-  { r: 255, g: 255, b: 255 }, // White
+  { r: 31, g: 0, b: 0 }, // Red
+  { r: 0, g: 31, b: 0 }, // Green
+  { r: 0, g: 0, b: 31 }, // Blue
+  { r: 31, g: 31, b: 0 }, // Yellow
+  { r: 15, g: 0, b: 15 }, // Purple
+  { r: 31, g: 31, b: 31 }, // White
 ];
 
 const numLeds = 300;
@@ -286,53 +286,63 @@ router.get("/getyears/primary/:startyear/:endyear", async function (req, res) {
     console.log(err);
   }
 });
-const tasker = async (i) => {
+const tasker = async () => {
+  const today = new Date();
+  let month = today.getMonth() + 1;
+  let year = today.getFullYear();
   try {
-    const today = new Date();
-    const a = today.getMonth() + 1;
-    const b = today.getFullYear();
-    const sqlQuery =
-      "SELECT emotion_id, COUNT(*) * 100.0 / (SELECT COUNT(*) FROM emotions) AS percentage, created_at as created_at FROM emotions WHERE CAST(strftime('%m', created_at)as INTEGER) = ? AND CAST(strftime('%Y', created_at)as INTEGER) = ?  GROUP BY emotion_id";
-    const rows = await db.all(sqlQuery, [a, b], (err, rows) => {
-      if (err) {
-        console.error(err);
-      } else {
-        let full = 0;
-        const percentages = [];
-        rows.map((emotion) => {
-          if (emotion.emotion_id != 6) {
-            percentages[emotion.emotion_id - 1] = Math.round(
-              (emotion.percentage / 100) * 100
-            );
-            full += Math.round((emotion.percentage / 100) * 100);
+    const sqlQuery = `SELECT emotion_id, COUNT(*) * 100.0 / (SELECT COUNT(*) FROM emotions WHERE CAST(strftime('%Y', created_at) AS INTEGER) = ? AND CAST(strftime('%m', created_at) AS INTEGER) = ?) AS percentage
+FROM emotions
+WHERE CAST(strftime('%Y', created_at) AS INTEGER) = ? AND CAST(strftime('%m', created_at) AS INTEGER) = ?
+GROUP BY emotion_id;
+`;
+    const rows = await db.all(
+      sqlQuery,
+      [year, month, year, month],
+      (err, rows) => {
+        if (err) {
+          console.error(err);
+        } else {
+          console.log(rows);
+          let full = 0;
+          const percentages = [];
+          rows.map((emotion) => {
+            console.log(emotion.percentage);
+            if (emotion.emotion_id != 6) {
+              percentages[emotion.emotion_id - 1] =
+                Math.floor(emotion.percentage * 100) / 100;
+              full += Math.floor(emotion.percentage * 100) / 100;
+            }
+          });
+          percentages[5] = Math.round((100 - full) * 100) / 100;
+          console.log(full);
+          console.log(percentages);
+
+          const buffer = Buffer.alloc(2 + numLeds * 2 + 1);
+
+          let bufferPos = buffer.writeUInt16BE(0xffff, 0);
+
+          for (let i = 0; i < percentages.length; i++) {
+            const numColorLeds = Math.floor((percentages[i] * numLeds) / 100);
+            const color = colors[i];
+            for (let j = 0; j < numColorLeds; j++) {
+              const value =
+                ((color.r & 31) << 10) + ((color.g & 31) << 5) + (color.b & 31);
+              bufferPos = buffer.writeUInt16BE(value, bufferPos);
+            }
           }
-        });
-        percentages[5] = 100 - full;
 
-        const buffer = Buffer.alloc(2 + numLeds * 2 + 1);
+          buffer.writeUInt8(0x80, bufferPos);
 
-        let bufferPos = buffer.writeUInt16BE(0xffff, 0);
+          client = new net.Socket();
+          client.connect(3002, "localhost");
+          client.write(buffer);
+          client.end();
 
-        for (let i = 0; i < percentages.length; i++) {
-          const numColorLeds = Math.floor((percentages[i] * numLeds) / 100);
-          const color = colors[i];
-          for (let j = 0; j < numColorLeds; j++) {
-            const value =
-              ((color.r & 31) << 10) + ((color.g & 31) << 5) + (color.b & 31);
-            bufferPos = buffer.writeUInt16BE(value, bufferPos);
-          }
+          return rows;
         }
-
-        buffer.writeUInt8(0x80, bufferPos);
-
-        client = new net.Socket();
-        client.connect(3002, "localhost");
-        client.write(buffer);
-        client.end();
-
-        return rows;
       }
-    });
+    );
   } catch (error) {
     console.log(error);
   }
