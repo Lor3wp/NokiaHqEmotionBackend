@@ -384,7 +384,7 @@ router.post("/addemotion", async function (req, res) {
     const result = await db.run(sqlQuery, [emotion, subEmotion]);
     res.status(200).json({ emotionId: result.insertID });
     // taskerTablet(colors[emotion - 1]);
-    await tasker();
+    tasker();
   } catch (error) {
     res.status(400).send(error.message);
   }
@@ -396,11 +396,11 @@ router.post("/addtabletemotion", async function (req, res) {
     const sqlQuery =
       "INSERT INTO emotions (emotion_id, sub_emotion_id) VALUES (?, ?)";
     const result = await db.run(sqlQuery, [emotion, subEmotion]);
-    await taskerTablet(colors[emotion]);
+    taskerTablet(colors[emotion]);
     console.log(color[emotion]);
     await delay(2000);
     console.log("tasker");
-    await tasker();
+    tasker();
     // await tasker();
     res.status(200).json({ emotionId: result.insertID });
     // TODO timer for 2 seconds, tasker() takes 2 seconds to be done
