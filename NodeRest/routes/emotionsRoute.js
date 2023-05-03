@@ -4,13 +4,14 @@ const router = express.Router();
 const net = require("net");
 
 const colors = [
+  { r: 0, g: 0, b: 0 }, // filler if there is less led than 2400
   { r: 7, g: 18, b: 23 }, // Happy
   { r: 31, g: 10, b: 10 }, // Angry
   { r: 15, g: 8, b: 19 }, // Scared
   { r: 31, g: 31, b: 6 }, // Exited
   { r: 8, g: 13, b: 22 }, // Sad
   { r: 26, g: 26, b: 26 }, // Neutral
-  { r: 31, g: 31, b: 31 }, // filler if there is less led than 2400
+  { r: 0, g: 0, b: 0 }, // filler if there is less led than 2400
 ];
 
 const numLeds = 2400;
