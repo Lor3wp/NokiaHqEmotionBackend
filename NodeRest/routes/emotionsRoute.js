@@ -308,7 +308,7 @@ GROUP BY emotion_id;
           console.log(rows);
           let full = 0;
           const percentages = [];
-          percentages.push(12.5);
+          percentages.push(0);
           rows.map((emotion) => {
             console.log(emotion.percentage);
             if (emotion.emotion_id != 6) {
@@ -321,6 +321,7 @@ GROUP BY emotion_id;
           for (let i in percentages) {
             percentages[i] = percentages[i] * 0.125;
           }
+          percentages[0] = 12.5;
           percentages.push(75);
           console.log(full);
           console.log(percentages);
